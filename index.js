@@ -22,7 +22,7 @@ var regex = /[=|\s]require\(([^)]+)\)/g;
 var dependencyArray = null;
 var acceptableExtensions = ['.js', '.jsx', '.ts'];
 
-var coreModules = ['fs'];
+var coreModules = ['fs','http',];
 
 var ignoreDirs = ['node_modules'];
 
@@ -97,7 +97,7 @@ function analyzeFile(filePath) {
 
     (combined || []).forEach(function (item) {
 
-        if (!_.contains(dependencyArray, item)) {
+        if (!_.contains(dependencyArray, item) && !_.contains(coreModules,item)) {
             console.log('package.json does not contain:', item);
         }
 
