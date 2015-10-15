@@ -1,0 +1,19 @@
+{
+  "name": "nodejs-dep-check",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "app-root-path": "^1.0.0",
+    "colors": "^1.1.2",
+    "path": "^0.12.7",
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+    "url" : "https://github.com/owner/project/issues"
+  "author": "",
+  "license": "ISC"
+}
