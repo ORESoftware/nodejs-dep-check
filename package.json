@@ -1,11 +1,12 @@
 {
   "name": "nodejs-dep-check",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "main": "index.js",
   "dependencies": {
     "app-root-path": "^1.0.0",
     "colors": "^1.1.2",
+    "debug": "^2.2.0",
     "path": "^0.12.7",
     "underscore": "^1.8.3"
   },
@@ -13,7 +14,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "url": "https://github.com/owner/project/issues",
+  "url": "https://github.com/ORESoftware/nodejs-dep-check/issues",
   "author": "Olegzandr",
   "license": "ISC"
 }

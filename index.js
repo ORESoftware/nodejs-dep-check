@@ -8,6 +8,7 @@ var path = require('path');
 var _ = require('underscore');
 var appRoot = require('app-root-path');
 var colors = require('colors');
+var debug = require('debug')('ndc');
 
 
 function endsWith(str, suffix) {
@@ -20,11 +21,31 @@ var regex = /[=|\s]require\(([^)]+)\)/g;
 
 
 var dependencyArray = null;
+var devDependencyArray = null;
+
 var acceptableExtensions = ['.js', '.jsx', '.ts'];
 
-var coreModules = ['fs','http',];
+var coreModules = [
+    'fs',
+    'http',
+    'child_process',
+    'os',
+    'cluster',
+    'qs',
+    'crypto',
+    'buffer',
+    'events',
+    'net',
+    'v8',
+    'stream',
+    'string_decoder',
+    'readline',
+    'path'
+];
 
-var ignoreDirs = ['node_modules'];
+var ignoreDirs = ['node_modules','test'];
+
+var opts = null;
 
 
 var getAllFilesFromFolder = function (dir) {
@@ -35,7 +56,9 @@ var getAllFilesFromFolder = function (dir) {
 
         if (_.contains(ignoreDirs, file)) {
 
-            console.log(colors.yellow('ignores:'), file);
+            if(opts.verbose){
+                console.log(colors.yellow('ignores:'), dir + '/' + file);
+            }
 
         }
         else {
@@ -66,9 +89,10 @@ var getAllFilesFromFolder = function (dir) {
 
 function analyzeFile(filePath) {
 
+    var statements = [];
+
     var str = fs.readFileSync(filePath);
 
-    console.log(colors.red(filePath));
     var arrMatches = String(str).match(regex);
 
 
@@ -98,24 +122,35 @@ function analyzeFile(filePath) {
     (combined || []).forEach(function (item) {
 
         if (!_.contains(dependencyArray, item) && !_.contains(coreModules,item)) {
-            console.log('package.json does not contain:', item);
+            statements.push('package.json does not contain: '+ item);
         }
 
     });
 
-
-    console.log('\n');
+    if(statements.length > 0){
+        console.log(colors.red(filePath));
+        for(var i =0; i < statements.length; i++){
+            console.log(statements[i]);
+        }
+        console.log('\n');
+    }
 
 }
 
 
-function start() {
+function start(options) {
+
+    opts = options || {};
 
     var rootPath = appRoot.path;
     var packageDotJSON = require(path.resolve(rootPath + '/' + 'package.json'));
 
     dependencyArray = Object.keys(packageDotJSON.dependencies);
-    console.log('\n', colors.green(dependencyArray), '\n\n');
+    devDependencyArray = Object.keys(packageDotJSON.devDependencies || {});
+
+    if(opts.verbose){
+        console.log('\n dependencies in package.json', colors.green(dependencyArray), '\n\n');
+    }
 
     getAllFilesFromFolder(rootPath);
 
