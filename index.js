@@ -23,7 +23,9 @@ var regex = /[=|\s]require\(([^)]+)\)/g;
 var dependencyArray = null;
 var devDependencyArray = null;
 
-var acceptableExtensions = ['.js', '.jsx', '.ts'];
+//var acceptableExtensions = ['.js', '.jsx', '.ts'];
+
+var acceptableExtensions = ['.js'];
 
 var coreModules = [
     'fs',
@@ -40,12 +42,18 @@ var coreModules = [
     'stream',
     'string_decoder',
     'readline',
-    'path'
+    'path',
+    'util',
+    'assert',
+    'dns',
+    'https',
+    'vm',
+    'zlib'
 ];
 
-var ignoreDirs = ['node_modules','test'];
-
 var opts = null;
+var ignoreDirs = null;
+var ignorePaths = null;
 
 
 var getAllFilesFromFolder = function (dir) {
@@ -56,35 +64,39 @@ var getAllFilesFromFolder = function (dir) {
 
         if (_.contains(ignoreDirs, file)) {
 
-            if(opts.verbose){
-                console.log(colors.yellow('ignores:'), dir + '/' + file);
+            if (opts.verbose) {
+                console.log(colors.yellow('(ignore dir option) ignored this path:'), dir + '/' + file);
             }
 
         }
         else {
 
-            file = dir + '/' + file;
+            file = path.resolve(path.normalize(dir + '/' + file));
 
-            stat = fs.statSync(file);
-
-            if (stat && stat.isDirectory()) {
-                getAllFilesFromFolder(file);
-            }
-            else if (stat) {
-                var str = String(file);
-                if (_.contains(acceptableExtensions, path.extname(str))) {
-                    analyzeFile(str);
+            if (_.contains(ignorePaths, file)) {
+                if (opts.verbose) {
+                    console.log(colors.yellow('(ignore path option) ignored this path:'), dir + '/' + file);
                 }
             }
             else {
-                console.log('warning: no stat');
+
+                stat = fs.statSync(file);
+
+                if (stat && stat.isDirectory()) {
+                    getAllFilesFromFolder(file);
+                }
+                else if (stat) {
+                    var str = String(file);
+                    if (_.contains(acceptableExtensions, path.extname(str))) {
+                        analyzeFile(str);
+                    }
+                }
+                else {
+                    console.log('warning: no stat');
+                }
             }
-
         }
-
-
     });
-
 };
 
 function analyzeFile(filePath) {
@@ -95,41 +107,30 @@ function analyzeFile(filePath) {
 
     var arrMatches = String(str).match(regex);
 
-
-    var temp1 = (arrMatches || []).map(function (item) {
-
+    var temp1 = arrMatches.map(function (item) {
         return item.split("\'")[1] || null;
-
     }).filter(function (item) {
-
         return (item && String(item).indexOf('.') !== 0)
-
     });
 
 
-    var temp2 = (arrMatches || []).map(function (item) {
-
+    var temp2 = arrMatches.map(function (item) {
         return item.split('"')[1] || null;
-
     }).filter(function (item) {
-
         return (item && String(item).indexOf('.') !== 0)
-
     });
 
     var combined = temp1.concat(temp2);
 
-    (combined || []).forEach(function (item) {
-
-        if (!_.contains(dependencyArray, item) && !_.contains(coreModules,item)) {
-            statements.push('package.json does not contain: '+ item);
+    combined.forEach(function (item) {
+        if (!_.contains(dependencyArray, item) && !_.contains(coreModules, item)) {
+            statements.push('package.json does not contain: ' + item);
         }
-
     });
 
-    if(statements.length > 0){
+    if (statements.length > 0) {
         console.log(colors.red(filePath));
-        for(var i =0; i < statements.length; i++){
+        for (var i = 0; i < statements.length; i++) {
             console.log(statements[i]);
         }
         console.log('\n');
@@ -143,12 +144,20 @@ function start(options) {
     opts = options || {};
 
     var rootPath = appRoot.path;
+
+    ignoreDirs = opts.ignoreDirs || [];
+    ignorePaths = opts.ignorePaths || [];
+
+    ignorePaths = ignorePaths.map(function (item) {
+        return String(path.resolve(path.normalize(rootPath + '/' + item)));
+    });
+
     var packageDotJSON = require(path.resolve(rootPath + '/' + 'package.json'));
 
     dependencyArray = Object.keys(packageDotJSON.dependencies);
     devDependencyArray = Object.keys(packageDotJSON.devDependencies || {});
 
-    if(opts.verbose){
+    if (opts.verbose) {
         console.log('\n dependencies in package.json', colors.green(dependencyArray), '\n\n');
     }
 
