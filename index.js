@@ -54,6 +54,7 @@ var coreModules = [
 var opts = null;
 var ignoreDirs = null;
 var ignorePaths = null;
+var errors = [];
 
 
 var getAllFilesFromFolder = function (dir) {
@@ -107,14 +108,14 @@ function analyzeFile(filePath) {
 
     var arrMatches = String(str).match(regex);
 
-    var temp1 = arrMatches.map(function (item) {
+    var temp1 = (arrMatches || []).map(function (item) {
         return item.split("\'")[1] || null;
     }).filter(function (item) {
         return (item && String(item).indexOf('.') !== 0)
     });
 
 
-    var temp2 = arrMatches.map(function (item) {
+    var temp2 = (arrMatches || []).map(function (item) {
         return item.split('"')[1] || null;
     }).filter(function (item) {
         return (item && String(item).indexOf('.') !== 0)
@@ -124,6 +125,7 @@ function analyzeFile(filePath) {
 
     combined.forEach(function (item) {
         if (!_.contains(dependencyArray, item) && !_.contains(coreModules, item)) {
+            errors.push('package.json does not contain: ' + item);
             statements.push('package.json does not contain: ' + item);
         }
     });
@@ -162,6 +164,13 @@ function start(options) {
     }
 
     getAllFilesFromFolder(rootPath);
+
+    if(errors.length > 0){
+        return new Error(errors.join('\n'));
+    }
+    else{
+        return null;
+    }
 
 }
 
