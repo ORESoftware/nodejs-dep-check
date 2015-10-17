@@ -108,30 +108,30 @@ function analyzeFile(filePath) {
 
     var src = fs.readFileSync(filePath);
 
-    //var arrMatches = String(str).match(regex);
-    //
-    //var temp1 = (arrMatches || []).map(function (item) {
-    //    return item.split("\'")[1] || null;
-    //}).filter(function (item) {
-    //    return (item && String(item).indexOf('.') !== 0)
-    //});
-    //
-    //
-    //var temp2 = (arrMatches || []).map(function (item) {
-    //    return item.split('"')[1] || null;
-    //}).filter(function (item) {
-    //    return (item && String(item).indexOf('.') !== 0)
-    //});
-    //
-    //var combined = temp1.concat(temp2);
+    var arrMatches = String(src).match(regex);
 
-    var requires = detective(src);
-
-    requires = (requires || []).filter(function(item){
-        return item && String(item).indexOf('.') !== 0;
+    var temp1 = (arrMatches || []).map(function (item) {
+        return item.split("\'")[1] || null;
+    }).filter(function (item) {
+        return (item && String(item).indexOf('.') !== 0)
     });
 
-    (requires || []).forEach(function (item) {
+
+    var temp2 = (arrMatches || []).map(function (item) {
+        return item.split('"')[1] || null;
+    }).filter(function (item) {
+        return (item && String(item).indexOf('.') !== 0)
+    });
+
+    var combined = temp1.concat(temp2);
+
+    //var requires = detective(src);
+    //
+    //requires = (requires || []).filter(function(item){
+    //    return item && String(item).indexOf('.') !== 0;
+    //});
+
+    (combined || []).forEach(function (item) {
         if (!_.contains(dependencyArray, item) && !_.contains(coreModules, item)) {
             errors.push('package.json does not contain: ' + item);
             statements.push('package.json does not contain: ' + item);
