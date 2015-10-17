@@ -9,6 +9,7 @@ var _ = require('underscore');
 var appRoot = require('app-root-path');
 var colors = require('colors');
 var debug = require('debug')('ndc');
+var detective = require('detective');
 
 
 function endsWith(str, suffix) {
@@ -48,7 +49,8 @@ var coreModules = [
     'dns',
     'https',
     'vm',
-    'zlib'
+    'zlib',
+    'url'
 ];
 
 var opts = null;
@@ -104,26 +106,32 @@ function analyzeFile(filePath) {
 
     var statements = [];
 
-    var str = fs.readFileSync(filePath);
+    var src = fs.readFileSync(filePath);
 
-    var arrMatches = String(str).match(regex);
+    //var arrMatches = String(str).match(regex);
+    //
+    //var temp1 = (arrMatches || []).map(function (item) {
+    //    return item.split("\'")[1] || null;
+    //}).filter(function (item) {
+    //    return (item && String(item).indexOf('.') !== 0)
+    //});
+    //
+    //
+    //var temp2 = (arrMatches || []).map(function (item) {
+    //    return item.split('"')[1] || null;
+    //}).filter(function (item) {
+    //    return (item && String(item).indexOf('.') !== 0)
+    //});
+    //
+    //var combined = temp1.concat(temp2);
 
-    var temp1 = (arrMatches || []).map(function (item) {
-        return item.split("\'")[1] || null;
-    }).filter(function (item) {
-        return (item && String(item).indexOf('.') !== 0)
+    var requires = detective(src);
+
+    requires = (requires || []).filter(function(item){
+        return item && String(item).indexOf('.') !== 0;
     });
 
-
-    var temp2 = (arrMatches || []).map(function (item) {
-        return item.split('"')[1] || null;
-    }).filter(function (item) {
-        return (item && String(item).indexOf('.') !== 0)
-    });
-
-    var combined = temp1.concat(temp2);
-
-    combined.forEach(function (item) {
+    (requires || []).forEach(function (item) {
         if (!_.contains(dependencyArray, item) && !_.contains(coreModules, item)) {
             errors.push('package.json does not contain: ' + item);
             statements.push('package.json does not contain: ' + item);
