@@ -9,7 +9,6 @@ var _ = require('underscore');
 var appRoot = require('app-root-path');
 var colors = require('colors');
 var debug = require('debug')('ndc');
-var detective = require('detective');
 
 
 function endsWith(str, suffix) {
@@ -22,8 +21,9 @@ function hasUppercaseCase(str) {
 
 //var regex = new RegExp(/\srequire[^//]/g);
 
-var regex = /[^a-zA-Z0-9]require\(([^)]+)\)/g;
+//var regex = /[^a-zA-Z0-9]require\(([^)]+)\)/g;
 
+var regex = /\srequire\(([^)]+)\)/g;
 
 var dependencyArray = null;
 var devDependencyArray = null;
@@ -73,7 +73,7 @@ var getAllFilesFromFolder = function (dir) {
         if (_.contains(ignoreDirs, file)) {
 
             if (opts.verbose) {
-                console.log(colors.yellow('[nodejs-dep-check] (ignore dir option) ignored this path:'), dir + '/' + file);
+                console.log(colors.yellow('\n [nodejs-dep-check] (ignore dir option) ignored this path:'), dir + '/' + file, '\n');
             }
 
         }
@@ -83,7 +83,7 @@ var getAllFilesFromFolder = function (dir) {
 
             if (_.contains(ignorePaths, file)) {
                 if (opts.verbose) {
-                    console.log(colors.yellow('[nodejs-dep-check] (ignore path option) ignored this path:'), dir + '/' + file);
+                    console.log(colors.yellow('\n [nodejs-dep-check] (ignore path option) ignored this path:'), dir + '/' + file, '\n');
                 }
             }
             else {
@@ -109,7 +109,7 @@ var getAllFilesFromFolder = function (dir) {
 
 function analyzeFile(filePath) {
 
-    var statements = [];
+    var fileErrors = [];
 
     var src = fs.readFileSync(filePath);
 
@@ -127,29 +127,26 @@ function analyzeFile(filePath) {
         return (item && String(item).indexOf('.') !== 0)
     });
 
-    //var requires = detective(src);
-    //
-    //requires = (requires || []).filter(function(item){
-    //    return item && String(item).indexOf('.') !== 0;
-    //});
 
     combined.forEach(function (item) {
         if (!_.contains(dependencyArray, item) && !_.contains(coreModules, item) && !_.contains(ignoreModules,item)) {
-            errors.push('package.json does not contain: ' + item + ' in file (' + filePath + ')');
+            fileErrors.push('package.json does not contain: ' + item + ' in file (' + filePath + ')');
         }
         if(!_.contains(ignoreModules,item) && hasUppercaseCase(item)){
-            errors.push('dependency has uppercase character(s): ' + item + ' in file (' + filePath + ')');
+            fileErrors.push('dependency has uppercase character(s): ' + item + ' in file (' + filePath + ')');
         }
     });
 
-    if (errors.length > 0) {
-        console.log(colors.red(filePath));
-        for (var i = 0; i < statements.length; i++) {
+    if (fileErrors.length > 0) {
+        console.log('[nodejs-dep-check] examined file: ' + colors.cyan(filePath));
+        for (var i = 0; i < fileErrors.length; i++) {
             if(opts.verbose){
-                console.log('[nodejs-dep-check]' + statements[i]);
+                console.log('[nodejs-dep-check]' + fileErrors[i]);
             }
         }
         console.log('\n');
+
+        errors = errors.concat(fileErrors);
     }
 
 }
@@ -157,7 +154,9 @@ function analyzeFile(filePath) {
 
 function start(options) {
 
-    opts = options || {};
+    opts = _.defaults((options || {}),{
+           verbose:true
+    });
 
     var rootPath = appRoot.path;
 
@@ -172,6 +171,13 @@ function start(options) {
     var packageDotJSON = require(path.resolve(rootPath + '/' + 'package.json'));
 
     dependencyArray = Object.keys(packageDotJSON.dependencies);
+
+    if(!dependencyArray){
+        return new Error('[nodejs-dep-check] no dependencies listed in package.json')
+    }
+
+    _.sortBy(dependencyArray, function (name) {return name}).reverse();
+
     devDependencyArray = Object.keys(packageDotJSON.devDependencies || {});
 
     if (opts.verbose) {
