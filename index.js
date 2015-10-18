@@ -21,9 +21,9 @@ function hasUppercaseCase(str) {
 
 //var regex = new RegExp(/\srequire[^//]/g);
 
-//var regex = /[^a-zA-Z0-9]require\(([^)]+)\)/g;
+var regex = /[^a-zA-Z0-9]require\(([^)]+)\)/g;
 
-var regex = /\srequire\(([^)]+)\)/g;
+//var regex = /\srequire\(([^)]+)\)/g;
 
 var dependencyArray = null;
 var devDependencyArray = null;
@@ -73,7 +73,7 @@ var getAllFilesFromFolder = function (dir) {
         if (_.contains(ignoreDirs, file)) {
 
             if (opts.verbose) {
-                console.log(colors.yellow('\n [nodejs-dep-check] (ignore dir option) ignored this path:'), dir + '/' + file, '\n');
+                console.log(colors.yellow('\n [nodejs-dep-check] ("ignoreDir" option) ignored this path:'), dir + '/' + file, '\n');
             }
 
         }
@@ -83,7 +83,7 @@ var getAllFilesFromFolder = function (dir) {
 
             if (_.contains(ignorePaths, file)) {
                 if (opts.verbose) {
-                    console.log(colors.yellow('\n [nodejs-dep-check] (ignore path option) ignored this path:'), dir + '/' + file, '\n');
+                    console.log(colors.yellow('\n [nodejs-dep-check] ("ignorePath" option) ignored this path:'), dir + '/' + file, '\n');
                 }
             }
             else {
@@ -130,7 +130,7 @@ function analyzeFile(filePath) {
 
     combined.forEach(function (item) {
         if (!_.contains(dependencyArray, item) && !_.contains(coreModules, item) && !_.contains(ignoreModules,item)) {
-            fileErrors.push('package.json does not contain: ' + item + ' in file (' + filePath + ')');
+            fileErrors.push('package.json does not contain: ' + item);
         }
         if(!_.contains(ignoreModules,item) && hasUppercaseCase(item)){
             fileErrors.push('dependency has uppercase character(s): ' + item + ' in file (' + filePath + ')');
@@ -138,10 +138,10 @@ function analyzeFile(filePath) {
     });
 
     if (fileErrors.length > 0) {
-        console.log('[nodejs-dep-check] examined file: ' + colors.cyan(filePath));
+        console.log('[nodejs-dep-check] this file has potential problems: ' + colors.cyan(filePath));
         for (var i = 0; i < fileErrors.length; i++) {
             if(opts.verbose){
-                console.log('[nodejs-dep-check]' + fileErrors[i]);
+                console.log(colors.yellow('[nodejs-dep-check] ') + colors.red(fileErrors[i]));
             }
         }
         console.log('\n');
@@ -181,7 +181,7 @@ function start(options) {
     devDependencyArray = Object.keys(packageDotJSON.devDependencies || {});
 
     if (opts.verbose) {
-        console.log('\n','[nodejs-dep-check] dependencies in package.json:', colors.green(dependencyArray),'\n');
+        console.log('\n',colors.yellow('[nodejs-dep-check] dependencies in package.json:'), colors.cyan(dependencyArray),'\n');
     }
 
     getAllFilesFromFolder(rootPath);
