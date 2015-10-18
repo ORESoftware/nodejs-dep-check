@@ -1,9 +1,9 @@
 
-# requirejs-metagen
+# nodejs-dep-check
 
 ### installation
 
-npm install --save nodejs-dep-check
+```npm install --save nodejs-dep-check```
 
 ### description
 
