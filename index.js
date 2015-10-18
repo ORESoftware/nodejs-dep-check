@@ -16,9 +16,13 @@ function endsWith(str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
 
+function hasUppercaseCase(str) {
+    return (/[A-Z]/.test(str));
+}
+
 //var regex = new RegExp(/\srequire[^//]/g);
 
-var regex = /[=|\s]require\(([^)]+)\)/g;
+var regex = /[^a-zA-Z0-9]require\(([^)]+)\)/g;
 
 
 var dependencyArray = null;
@@ -56,6 +60,7 @@ var coreModules = [
 var opts = null;
 var ignoreDirs = null;
 var ignorePaths = null;
+var ignoreModules = null;
 var errors = [];
 
 
@@ -68,7 +73,7 @@ var getAllFilesFromFolder = function (dir) {
         if (_.contains(ignoreDirs, file)) {
 
             if (opts.verbose) {
-                console.log(colors.yellow('(ignore dir option) ignored this path:'), dir + '/' + file);
+                console.log(colors.yellow('[nodejs-dep-check] (ignore dir option) ignored this path:'), dir + '/' + file);
             }
 
         }
@@ -78,7 +83,7 @@ var getAllFilesFromFolder = function (dir) {
 
             if (_.contains(ignorePaths, file)) {
                 if (opts.verbose) {
-                    console.log(colors.yellow('(ignore path option) ignored this path:'), dir + '/' + file);
+                    console.log(colors.yellow('[nodejs-dep-check] (ignore path option) ignored this path:'), dir + '/' + file);
                 }
             }
             else {
@@ -95,7 +100,7 @@ var getAllFilesFromFolder = function (dir) {
                     }
                 }
                 else {
-                    console.log('warning: no stat');
+                    console.log('[nodejs-dep-check] warning: no stat');
                 }
             }
         }
@@ -112,18 +117,15 @@ function analyzeFile(filePath) {
 
     var temp1 = (arrMatches || []).map(function (item) {
         return item.split("\'")[1] || null;
-    }).filter(function (item) {
-        return (item && String(item).indexOf('.') !== 0)
     });
-
 
     var temp2 = (arrMatches || []).map(function (item) {
         return item.split('"')[1] || null;
-    }).filter(function (item) {
+    })
+
+    var combined = (temp1.concat(temp2)).filter(function (item) {
         return (item && String(item).indexOf('.') !== 0)
     });
-
-    var combined = temp1.concat(temp2);
 
     //var requires = detective(src);
     //
@@ -131,17 +133,21 @@ function analyzeFile(filePath) {
     //    return item && String(item).indexOf('.') !== 0;
     //});
 
-    (combined || []).forEach(function (item) {
-        if (!_.contains(dependencyArray, item) && !_.contains(coreModules, item)) {
-            errors.push('package.json does not contain: ' + item);
-            statements.push('package.json does not contain: ' + item);
+    combined.forEach(function (item) {
+        if (!_.contains(dependencyArray, item) && !_.contains(coreModules, item) && !_.contains(ignoreModules,item)) {
+            errors.push('package.json does not contain: ' + item + ' in file (' + filePath + ')');
+        }
+        if(!_.contains(ignoreModules,item) && hasUppercaseCase(item)){
+            errors.push('dependency has uppercase character(s): ' + item + ' in file (' + filePath + ')');
         }
     });
 
-    if (statements.length > 0) {
+    if (errors.length > 0) {
         console.log(colors.red(filePath));
         for (var i = 0; i < statements.length; i++) {
-            console.log(statements[i]);
+            if(opts.verbose){
+                console.log('[nodejs-dep-check]' + statements[i]);
+            }
         }
         console.log('\n');
     }
@@ -157,6 +163,7 @@ function start(options) {
 
     ignoreDirs = opts.ignoreDirs || [];
     ignorePaths = opts.ignorePaths || [];
+    ignoreModules = opts.ignoreModules || [];
 
     ignorePaths = ignorePaths.map(function (item) {
         return String(path.resolve(path.normalize(rootPath + '/' + item)));
@@ -168,13 +175,13 @@ function start(options) {
     devDependencyArray = Object.keys(packageDotJSON.devDependencies || {});
 
     if (opts.verbose) {
-        console.log('\n dependencies in package.json', colors.green(dependencyArray), '\n\n');
+        console.log('\n','[nodejs-dep-check] dependencies in package.json:', colors.green(dependencyArray),'\n');
     }
 
     getAllFilesFromFolder(rootPath);
 
     if(errors.length > 0){
-        return new Error(errors.join('\n'));
+        return new Error(errors.join('\n\t'));
     }
     else{
         return null;
