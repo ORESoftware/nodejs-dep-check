@@ -73,7 +73,7 @@ var getAllFilesFromFolder = function (dir) {
         if (_.contains(ignoreDirs, file)) {
 
             if (opts.verbose) {
-                console.log(colors.yellow('\n [nodejs-dep-check] ("ignoreDir" option) ignored this path:'), dir + '/' + file, '\n');
+                console.log(colors.yellow('\n [nodejs-dep-check]'), colors.gray('"ignoreDir" option ignored this path:'), dir + '/' + file, '\n');
             }
 
         }
@@ -83,7 +83,7 @@ var getAllFilesFromFolder = function (dir) {
 
             if (_.contains(ignorePaths, file)) {
                 if (opts.verbose) {
-                    console.log(colors.yellow('\n [nodejs-dep-check] ("ignorePath" option) ignored this path:'), dir + '/' + file, '\n');
+                    console.log(colors.yellow('\n [nodejs-dep-check]'), colors.gray('"ignorePath" option) ignored this path:'), dir + '/' + file, '\n');
                 }
             }
             else {
@@ -138,7 +138,7 @@ function analyzeFile(filePath) {
     });
 
     if (fileErrors.length > 0) {
-        console.log('[nodejs-dep-check] this file has potential problems: ' + colors.cyan(filePath));
+        console.log(colors.yellow('[nodejs-dep-check]'), colors.gray('this file has potential problems:'), colors.magenta(filePath));
         for (var i = 0; i < fileErrors.length; i++) {
             if(opts.verbose){
                 console.log(colors.yellow('[nodejs-dep-check] ') + colors.red(fileErrors[i]));
