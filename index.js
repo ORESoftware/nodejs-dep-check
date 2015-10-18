@@ -152,7 +152,7 @@ function analyzeFile(filePath) {
 }
 
 
-function start(options) {
+function run(options) {
 
     opts = _.defaults((options || {}),{
            verbose:true
@@ -198,6 +198,6 @@ function start(options) {
 
 module.exports = {
 
-    start: start
+    run: run
 
 };
