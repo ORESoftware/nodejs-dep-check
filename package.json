@@ -1,6 +1,6 @@
 {
   "name": "nodejs-dep-check",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "",
   "main": "index.js",
   "dependencies": {
@@ -15,6 +15,6 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "url": "https://github.com/ORESoftware/nodejs-dep-check/issues",
-  "author": "Olegzandr",
+  "author": "Olegzandr Denman",
   "license": "ISC"
 }

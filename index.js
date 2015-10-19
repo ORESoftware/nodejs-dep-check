@@ -133,12 +133,14 @@ function analyzeFile(filePath) {
             fileErrors.push('package.json does not contain: ' + item);
         }
         if(!_.contains(ignoreModules,item) && hasUppercaseCase(item)){
-            fileErrors.push('dependency has uppercase character(s): ' + item + ' in file (' + filePath + ')');
+            fileErrors.push('dependency string has uppercase character(s): "' + item + '"');
         }
     });
 
     if (fileErrors.length > 0) {
-        console.log(colors.yellow('[nodejs-dep-check]'), colors.gray('this file has potential problems:'), colors.magenta(filePath));
+        if(opts.verbose) {
+            console.log(colors.yellow('[nodejs-dep-check]'), colors.gray('this file has potential problems:'), colors.magenta(filePath));
+        }
         for (var i = 0; i < fileErrors.length; i++) {
             if(opts.verbose){
                 console.log(colors.yellow('[nodejs-dep-check] ') + colors.red(fileErrors[i]));
@@ -168,12 +170,18 @@ function run(options) {
         return String(path.resolve(path.normalize(rootPath + '/' + item)));
     });
 
-    var packageDotJSON = require(path.resolve(rootPath + '/' + 'package.json'));
+    var packageDotJSON = null;
+    try{
+        packageDotJSON = require(path.resolve(rootPath + '/' + 'package.json'));
+    }
+    catch(err){
+        throw new Error('[nodejs-dep-check] no package.json file is found in the root of your project')
+    }
 
     dependencyArray = Object.keys(packageDotJSON.dependencies);
 
     if(!dependencyArray){
-        return new Error('[nodejs-dep-check] no dependencies listed in package.json')
+        throw new Error('[nodejs-dep-check] no dependencies listed in package.json')
     }
 
     _.sortBy(dependencyArray, function (name) {return name}).reverse();

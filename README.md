@@ -3,11 +3,13 @@
 
 ### installation
 
-```npm install --save nodejs-dep-check```
+```bash
+$ npm install --save nodejs-dep-check
+```
 
 ### description
 
-check to see if all dependencies are in package.json, before deploying projects to production
+this module checks to see if all dependencies are in package.json, before deploying projects to production
 
 ndc (nodejs-dep-check) should be incorporated in continuous integration tests
 
@@ -17,11 +19,11 @@ ndc (nodejs-dep-check) should be incorporated in continuous integration tests
 ```js
 var ndc = require('nodejs-dep-check');
 
-ndc.start({
-    verbose:true,                                  //prints more output, true is default, set to false for less output at command line
-    ignoreModules: ['colors/safe'],                //use this option to override the errors for a particular module, e.g. colors/safe is something this module doesn't currently handle
-    ignorePaths: ['/node_modules/'],               //ignore specific paths, but not all directories with this name, just the one path
-    ignoreDirs: ['node_modules','test']            //ignore all contents and subcontents in any dir called "node_modules" or "test"
+ndc.run({
+    verbose:true,                             // prints more output, true is default, set this to false for less output at command line
+    ignoreModules: ['colors/safe'],           // use this option to override the errors for a particular module, e.g. colors/safe is something this module doesn't currently handle
+    ignorePaths: ['/node_modules/'],          // ignore specific paths, *not all* directories with this name, just the exact path you specify which is relative to the root of your node.js project
+    ignoreDirs: ['node_modules','test']       // ignore all contents and subcontents in *any* dir called "node_modules" or "test" or whatever
 });
 ```
 
