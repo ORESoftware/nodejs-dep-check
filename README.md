@@ -9,7 +9,7 @@ Github repo: https://github.com/ORESoftware/nodejs-dep-check
 ## installation
 
 ```bash
-$ npm install --save nodejs-dep-check
+$ npm install --save-dev nodejs-dep-check
 ```
 
 ### description
@@ -17,6 +17,9 @@ $ npm install --save nodejs-dep-check
 this module checks to see if all dependencies are in package.json, before deploying projects to production
 
 ndc (nodejs-dep-check) should be incorporated in continuous integration tests
+
+you won't want this module for anything but testing, so you can use the --save-dev option instead of --save when
+installing with NPM
 
 
 ## how to use
