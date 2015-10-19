@@ -62,7 +62,6 @@ var ignoreDirs = null;
 var ignorePaths = null;
 var ignoreModules = null;
 var errors = [];
-var missingDependencies = [];
 
 
 var getAllFilesFromFolder = function (dir) {
@@ -74,7 +73,7 @@ var getAllFilesFromFolder = function (dir) {
         if (_.contains(ignoreDirs, file)) {
 
             if (opts.verbose) {
-                console.log(colors.gray.bgBlack('\n', '[nodejs-dep-check]'), colors.gray('"ignoreDir" option has disregarded this path:'), dir + '/' + file);
+                console.log(colors.gray.bgBlack('', '[nodejs-dep-check]'), colors.gray('"ignoreDir" option has disregarded this path:'), dir + '/' + file);
             }
 
         }
@@ -84,7 +83,7 @@ var getAllFilesFromFolder = function (dir) {
 
             if (_.contains(ignorePaths, file)) {
                 if (opts.verbose) {
-                    console.log(colors.gray.bgBlack('\n', '[nodejs-dep-check]'), colors.gray('"ignorePath" option has disregarded this path:'), dir + '/' + file, '\n');
+                    console.log(colors.gray.bgBlack('', '[nodejs-dep-check]'), colors.gray('"ignorePath" option has disregarded this path:'), dir + '/' + file, '');
                 }
             }
             else {
@@ -139,7 +138,7 @@ function analyzeFile(filePath) {
 
     if (fileErrors.length > 0) {
         if (opts.verbose) {
-            console.log('', colors.gray.bgBlack('[nodejs-dep-check]'), colors.yellow('this file has potential problems:'), colors.black.bgYellow(filePath),'');
+            console.log('\n', colors.gray.bgBlack('[nodejs-dep-check]'), colors.yellow('this file has potential problems:'), colors.black.bgYellow(filePath),'');
         }
         for (var i = 0; i < fileErrors.length; i++) {
             if (opts.verbose) {
@@ -200,7 +199,7 @@ function run(options) {
         return new Error(errs);
     }
     else {
-        console.log('\n',colors.gray.bgBlack('[nodejs-dep-check]'),colors.bgGreen('found no problems with your project'),'');
+        console.log('\n',colors.gray.bgBlack('[nodejs-dep-check]'),colors.black.bgGreen('found no problems with your project'),'');
         return null;
     }
 
