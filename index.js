@@ -21,7 +21,7 @@ function hasUppercaseCase(str) {
 
 //var regex = new RegExp(/\srequire[^//]/g);
 
-var regex = /[^a-zA-Z0-9]require\(([^)]+)\)/g;   //look for require('xyz') anywhere where it's not hi5require() or lolrequire()
+var regex = /[^a-zA-Z0-9]require\(([^)]+)\)/g;   //look for oorequire('xyz') anywhere where it's not hi5require() or lolrequire()
 
 //var regex = /\srequire\(([^)]+)\)/g;
 
@@ -73,7 +73,7 @@ var getAllFilesFromFolder = function (dir) {
         if (_.contains(ignoreDirs, file)) {
 
             if (opts.verbose) {
-                console.log(colors.gray.bgBlack('', '[nodejs-dep-check]'), colors.gray('"ignoreDir" option has disregarded this path:'), dir + '/' + file);
+                console.log(colors.bold.gray('', '[nodejs-dep-check]'), colors.gray('"ignoreDir" option has disregarded this path:'), dir + '/' + file);
             }
 
         }
@@ -83,7 +83,7 @@ var getAllFilesFromFolder = function (dir) {
 
             if (_.contains(ignorePaths, file)) {
                 if (opts.verbose) {
-                    console.log(colors.gray.bgBlack('', '[nodejs-dep-check]'), colors.gray('"ignorePath" option has disregarded this path:'), dir + '/' + file, '');
+                    console.log(colors.bold.grey('', '[nodejs-dep-check]'), colors.gray('"ignorePath" option has disregarded this path:'), dir + '/' + file, '');
                 }
             }
             else {
@@ -138,11 +138,11 @@ function analyzeFile(filePath) {
 
     if (fileErrors.length > 0) {
         if (opts.verbose) {
-            console.log('\n', colors.gray.bgBlack('[nodejs-dep-check]'), colors.yellow('this file has potential problems:'), colors.black.bgYellow(filePath),'');
+            console.log('\n', colors.bold.gray('[nodejs-dep-check]'), colors.yellow('this file has potential problems:'), colors.black.bgYellow(filePath),'');
         }
         for (var i = 0; i < fileErrors.length; i++) {
             if (opts.verbose) {
-                console.log('', colors.gray.bgBlack('[nodejs-dep-check]'), colors.red(fileErrors[i]));
+                console.log('', colors.bold.gray('[nodejs-dep-check]'), colors.red(fileErrors[i]));
             }
         }
         errors = errors.concat(fileErrors);
@@ -187,7 +187,7 @@ function run(options) {
 
     devDependencyArray = Object.keys(packageDotJSON.devDependencies || {});
 
-    console.log('\n', colors.gray.bgBlack('[nodejs-dep-check] is starting run...dependencies declared in package.json are:'), colors.cyan(dependencyArray), '\n');
+    console.log('\n', colors.bold.gray('[nodejs-dep-check]'), colors.gray('is starting run...dependencies declared in package.json are:'), colors.cyan(dependencyArray), '\n');
 
 
     getAllFilesFromFolder(rootPath);
@@ -195,11 +195,11 @@ function run(options) {
 
     if (errors.length > 0) {
         var errs = _.uniq(errors).join('\n\t');
-        console.log('\n',colors.gray.bgBlack('[nodejs-dep-check]'),colors.bgRed('found problems with your project:') + '\n\t' + colors.red(errs),'');
+        console.log('\n',colors.bold.gray('[nodejs-dep-check]'),colors.bgRed('found problems with your project:') + '\n\t' + colors.red(errs),'');
         return new Error(errs);
     }
     else {
-        console.log('\n',colors.gray.bgBlack('[nodejs-dep-check]'),colors.black.bgGreen('found no problems with your project'),'');
+        console.log('\n',colors.bold.gray('[nodejs-dep-check]'),colors.black.bgGreen('found no problems with your project'),'');
         return null;
     }
 

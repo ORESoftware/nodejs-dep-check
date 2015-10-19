@@ -8,5 +8,5 @@ var ndc = require('../index.js');
 ndc.run({
     verbose:true,
     //ignorePaths: ['/node_modules/'],
-    ignoreDirs: ['node_modules','test']
+    ignoreDirs: ['node_modules','test','requireThese.js','/ ']
 });
