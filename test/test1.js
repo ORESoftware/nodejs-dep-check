@@ -5,4 +5,8 @@
 
 var ndc = require('../index.js');
 
-ndc.start();
+ndc.run({
+    verbose:true,
+    //ignorePaths: ['/node_modules/'],
+    ignoreDirs: ['node_modules','test']
+});

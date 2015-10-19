@@ -15,15 +15,22 @@ function endsWith(str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
 
+function hasUppercaseCase(str) {
+    return (/[A-Z]/.test(str));
+}
+
 //var regex = new RegExp(/\srequire[^//]/g);
 
-var regex = /[=|\s]require\(([^)]+)\)/g;
+var regex = /[^a-zA-Z0-9]require\(([^)]+)\)/g;   //look for require('xyz') anywhere where it's not hi5require() or lolrequire()
 
+//var regex = /\srequire\(([^)]+)\)/g;
 
 var dependencyArray = null;
 var devDependencyArray = null;
 
-var acceptableExtensions = ['.js', '.jsx', '.ts'];
+//var acceptableExtensions = ['.js', '.jsx', '.ts'];
+
+var acceptableExtensions = ['.js'];
 
 var coreModules = [
     'fs',
@@ -31,7 +38,7 @@ var coreModules = [
     'child_process',
     'os',
     'cluster',
-    'qs',
+    'querystring',
     'crypto',
     'buffer',
     'events',
@@ -40,12 +47,21 @@ var coreModules = [
     'stream',
     'string_decoder',
     'readline',
-    'path'
+    'path',
+    'util',
+    'assert',
+    'dns',
+    'https',
+    'vm',
+    'zlib',
+    'url'
 ];
 
-var ignoreDirs = ['node_modules','test'];
-
 var opts = null;
+var ignoreDirs = null;
+var ignorePaths = null;
+var ignoreModules = null;
+var errors = [];
 
 
 var getAllFilesFromFolder = function (dir) {
@@ -56,109 +72,142 @@ var getAllFilesFromFolder = function (dir) {
 
         if (_.contains(ignoreDirs, file)) {
 
-            if(opts.verbose){
-                console.log(colors.yellow('ignores:'), dir + '/' + file);
+            if (opts.verbose) {
+                console.log(colors.gray.bgBlack('', '[nodejs-dep-check]'), colors.gray('"ignoreDir" option has disregarded this path:'), dir + '/' + file);
             }
 
         }
         else {
 
-            file = dir + '/' + file;
+            file = path.resolve(path.normalize(dir + '/' + file));
 
-            stat = fs.statSync(file);
-
-            if (stat && stat.isDirectory()) {
-                getAllFilesFromFolder(file);
-            }
-            else if (stat) {
-                var str = String(file);
-                if (_.contains(acceptableExtensions, path.extname(str))) {
-                    analyzeFile(str);
+            if (_.contains(ignorePaths, file)) {
+                if (opts.verbose) {
+                    console.log(colors.gray.bgBlack('', '[nodejs-dep-check]'), colors.gray('"ignorePath" option has disregarded this path:'), dir + '/' + file, '');
                 }
             }
             else {
-                console.log('warning: no stat');
+
+                stat = fs.statSync(file);
+
+                if (stat && stat.isDirectory()) {
+                    getAllFilesFromFolder(file);
+                }
+                else if (stat) {
+                    var str = String(file);
+                    if (_.contains(acceptableExtensions, path.extname(str))) {
+                        analyzeFile(str);
+                    }
+                }
+                else {
+                    console.log(colors.bgRed('[nodejs-dep-check] warning: no stat'));
+                }
             }
-
         }
-
-
     });
-
 };
 
 function analyzeFile(filePath) {
 
-    var statements = [];
+    var fileErrors = [];
 
-    var str = fs.readFileSync(filePath);
+    var src = fs.readFileSync(filePath);
 
-    var arrMatches = String(str).match(regex);
-
+    var arrMatches = String(src).match(regex);
 
     var temp1 = (arrMatches || []).map(function (item) {
-
         return item.split("\'")[1] || null;
-
-    }).filter(function (item) {
-
-        return (item && String(item).indexOf('.') !== 0)
-
     });
-
 
     var temp2 = (arrMatches || []).map(function (item) {
-
         return item.split('"')[1] || null;
+    });
 
-    }).filter(function (item) {
+    (temp1.concat(temp2)).filter(function (item) {
 
         return (item && String(item).indexOf('.') !== 0)
 
+    }).forEach(function (item) {
+        if (!_.contains(dependencyArray, item) && !_.contains(coreModules, item) && !_.contains(ignoreModules, item)) {
+            fileErrors.push('package.json does not contain: ' + item);
+        }
+        if (!_.contains(ignoreModules, item) && hasUppercaseCase(item)) {
+            fileErrors.push('dependency string has uppercase character(s): "' + item + '"');
+        }
     });
 
-    var combined = temp1.concat(temp2);
-
-    (combined || []).forEach(function (item) {
-
-        if (!_.contains(dependencyArray, item) && !_.contains(coreModules,item)) {
-            statements.push('package.json does not contain: '+ item);
+    if (fileErrors.length > 0) {
+        if (opts.verbose) {
+            console.log('\n', colors.gray.bgBlack('[nodejs-dep-check]'), colors.yellow('this file has potential problems:'), colors.black.bgYellow(filePath),'');
         }
-
-    });
-
-    if(statements.length > 0){
-        console.log(colors.red(filePath));
-        for(var i =0; i < statements.length; i++){
-            console.log(statements[i]);
+        for (var i = 0; i < fileErrors.length; i++) {
+            if (opts.verbose) {
+                console.log('', colors.gray.bgBlack('[nodejs-dep-check]'), colors.red(fileErrors[i]));
+            }
         }
-        console.log('\n');
+        errors = errors.concat(fileErrors);
     }
 
 }
 
 
-function start(options) {
+function run(options) {
 
-    opts = options || {};
+    opts = _.defaults((options || {}), {
+        verbose: true
+    });
 
     var rootPath = appRoot.path;
-    var packageDotJSON = require(path.resolve(rootPath + '/' + 'package.json'));
 
-    dependencyArray = Object.keys(packageDotJSON.dependencies);
-    devDependencyArray = Object.keys(packageDotJSON.devDependencies || {});
+    ignoreDirs = opts.ignoreDirs || [];
+    ignorePaths = opts.ignorePaths || [];
+    ignoreModules = opts.ignoreModules || [];
 
-    if(opts.verbose){
-        console.log('\n dependencies in package.json', colors.green(dependencyArray), '\n\n');
+    ignorePaths = ignorePaths.map(function (item) {
+        return String(path.resolve(path.normalize(rootPath + '/' + item)));
+    });
+
+    var packageDotJSON = null;
+    try {
+        packageDotJSON = require(path.resolve(rootPath + '/' + 'package.json'));
+    }
+    catch (err) {
+        throw new Error('[nodejs-dep-check] no package.json file is found in the root of your project')
     }
 
+    dependencyArray = Object.keys(packageDotJSON.dependencies);
+
+    if (!dependencyArray) {
+        throw new Error('[nodejs-dep-check] no dependencies listed in package.json')
+    }
+
+    _.sortBy(dependencyArray, function (name) {
+        return name
+    }).reverse();
+
+    devDependencyArray = Object.keys(packageDotJSON.devDependencies || {});
+
+    console.log('\n', colors.gray.bgBlack('[nodejs-dep-check] is starting run...dependencies declared in package.json are:'), colors.cyan(dependencyArray), '\n');
+
+
     getAllFilesFromFolder(rootPath);
+
+
+    if (errors.length > 0) {
+        var errs = _.uniq(errors).join('\n\t');
+        console.log('\n',colors.gray.bgBlack('[nodejs-dep-check]'),colors.bgRed('found problems with your project:') + '\n\t' + colors.red(errs),'');
+        return new Error(errs);
+    }
+    else {
+        console.log('\n',colors.gray.bgBlack('[nodejs-dep-check]'),colors.black.bgGreen('found no problems with your project'),'');
+        return null;
+    }
 
 }
 
 
 module.exports = {
 
-    start: start
+    run: run
 
 };
