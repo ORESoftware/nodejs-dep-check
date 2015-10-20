@@ -1,6 +1,6 @@
 {
   "name": "nodejs-dep-check",
-  "version": "1.1.9",
+  "version": "1.2.1",
   "description": "checks to see if all the dependencies in your code are reflected in package.json",
   "main": "index.js",
   "dependencies": {

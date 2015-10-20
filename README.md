@@ -1,10 +1,6 @@
 
 # nodejs-dep-check
 
-Github repo: https://github.com/ORESoftware/nodejs-dep-check
-
-(for some reason the Github link is not showing up on NPM)
-
 
 ## installation
 
@@ -14,11 +10,12 @@ $ npm install --save-dev nodejs-dep-check
 
 ### description
 
-this module checks to see if all the dependencies in your code are reflected in package.json, before deploying projects to production
+this module checks to see if all the dependencies in your code are reflected in package.json - you may have noticed that when you deploy code the build fails
+or after you deploy there's a runtime error because a require statement in your code referenced a dependency that didn't make into package.json for whatever reason.
 
-ndc (nodejs-dep-check) should be incorporated in continuous integration tests
+therefore, ndc (nodejs-dep-check) should be incorporated in your continuous integration tests - this module is designed to be used as a static analysis test
 
-you won't want this module for anything but testing, so you can use the --save-dev option instead of --save when
+you probably won't want this module for anything but testing, so you can use the --save-dev option instead of --save when
 installing with NPM
 
 
