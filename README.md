@@ -14,7 +14,7 @@ $ npm install --save-dev nodejs-dep-check
 
 ### description
 
-this module checks to see if all dependencies are in package.json, before deploying projects to production
+this module checks to see if all the dependencies in your code are reflected in package.json, before deploying projects to production
 
 ndc (nodejs-dep-check) should be incorporated in continuous integration tests
 

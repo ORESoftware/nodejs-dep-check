@@ -1,7 +1,7 @@
 {
   "name": "nodejs-dep-check",
   "version": "1.1.9",
-  "description": "",
+  "description": "checks to see if all the dependencies in your code are reflected in package.json",
   "main": "index.js",
   "dependencies": {
     "app-root-path": "^1.0.0",
@@ -15,6 +15,10 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "url": "https://github.com/ORESoftware/nodejs-dep-check/issues",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ORESoftware/nodejs-dep-check.git"
+  },
   "author": "Olegzandr Denman",
   "license": "ISC"
 }
