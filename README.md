@@ -71,11 +71,15 @@ sure if there is demand for that, let me know.
 
 here's typical output - you might notice that there is line commented out
 
+```
 //var redis = require('redis');
+```
 
 this library cannot ignore commented out lines - you have to alter the comment into this:
 
+```
 //var redis = require#('redis'); (or whatever non-alpha-numeric character suits your fancy)
+```
 
 ![alt tag](https://photos-1.dropbox.com/t/2/AAD3Pq7vaLPv3N1ZnrWzbDA5_Jb407aQTZKg7HFS8yn96w/12/76740618/png/32x32/1/1445979600/0/2/Screenshot%202015-10-27%2012.48.08.png/CIrwyyQgASACIAMgBSAHKAEoBw/_Kmbg4Gfzqx3qdKgJadBRw4DvTVhsYHwV1NxUhL4j3Y?size=1280x960&size_mode=2)
 
