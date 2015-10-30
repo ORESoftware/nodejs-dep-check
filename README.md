@@ -52,7 +52,7 @@ note: you can ignore specific files by using either the ignoreDirs or ignorePath
              ignoreModules: ['colors/safe']
          });
          
-         done(result);   //if result is an instance of Error, then Mocha will handle the test case for you
+         done(result);   // Mocha will handle the test case for you, because nodejs-dep-check passes an instance of Error if any check fails
  
      });
  
