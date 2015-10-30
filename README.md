@@ -15,7 +15,7 @@ or after you deploy there's a runtime error because a require statement in your 
 
 therefore, ndc (nodejs-dep-check) should be incorporated in your continuous integration tests - this module is designed to be used as a static analysis test
 
-you probably won't want this module for anything but testing, so you can use the --save-dev option instead of --save when
+you probably won't want this module for anything but testing, so you can use the ```--save-dev``` option instead of ```--save``` when
 installing with NPM
 
 
