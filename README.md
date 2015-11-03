@@ -10,12 +10,11 @@ $ npm install --save-dev nodejs-dep-check
 
 ### description
 
-this module checks to see if all the dependencies in your code are reflected in package.json - you may have noticed that when you deploy code the build fails
-or after you deploy there's a runtime error because a require statement in your code referenced a dependency that didn't make into package.json for whatever reason.
+this module checks to see if all the dependencies in your code are reflected in ```package.json``` - you may have noticed that when you deploy code the build sometimes fails, or worse, after you deploy there's a runtime error because a require statement in your code references a dependency that didn't make into package.json for whatever reason.
 
 therefore, ndc (nodejs-dep-check) should be incorporated in your continuous integration tests - this module is designed to be used as a static analysis test
 
-you probably won't want this module for anything but testing, so you can use the --save-dev option instead of --save when
+you probably won't want this module for anything but testing, so you can use the ```--save-dev``` option instead of ```--save``` when
 installing with NPM
 
 
@@ -40,8 +39,7 @@ note: you can ignore specific files by using either the ignoreDirs or ignorePath
 ```js
 
  describe('@test-dep-check', function () {
- 
-     var assert = require('assert');
+
  
      it('[test]', function (done) {
  
@@ -53,10 +51,8 @@ note: you can ignore specific files by using either the ignoreDirs or ignorePath
              ignoreDirs: ['node_modules', 'test'],
              ignoreModules: ['colors/safe']
          });
- 
-         //assert(!(result instanceof Error)); //we could use assert like this but we don't need to, just pass the result to done
          
-         done(result);
+         done(result);   // Mocha will handle the test case for you, because nodejs-dep-check passes an instance of Error if any check fails
  
      });
  
@@ -64,10 +60,22 @@ note: you can ignore specific files by using either the ignoreDirs or ignorePath
  
 ```
 
-In the near future I will create make this runnable by command line, but for now, it's probably best used with a testing framework like Mocha.
+In the near future I will create make this runnable by command line, but for now, it's probably best used with a testing framework like Mocha, and I don't really see a good reason to make it a global package.
 
-Currently it's configured to look at your entire project, so it always starts recursively with the root of your app. I could provide an option to only search nested directories, but I am not
-sure if there is demand for that, let me know.
+Currently it's configured to look at your entire project, so it always starts recursively with the root of your app.
 
+here's typical output - you might notice that there is line commented out
+
+```
+//var redis = require('redis');
+```
+
+this library doesn't ignore commented out lines - so you may wish to alter the comment into this:
+
+```
+//var redis = require#('redis'); (or whatever non-alpha-numeric character suits your fancy)
+```
+
+![alt tag](https://photos-1.dropbox.com/t/2/AAD3Pq7vaLPv3N1ZnrWzbDA5_Jb407aQTZKg7HFS8yn96w/12/76740618/png/32x32/1/1445979600/0/2/Screenshot%202015-10-27%2012.48.08.png/CIrwyyQgASACIAMgBSAHKAEoBw/_Kmbg4Gfzqx3qdKgJadBRw4DvTVhsYHwV1NxUhL4j3Y?size=1280x960&size_mode=2)
 
 any questions you can open an issue on Github or email me at alex@oresoftware.com, thanks
