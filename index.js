@@ -3,7 +3,7 @@
  */
 
 
-var fs = require("fs");
+var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
 var appRoot = require('app-root-path');
@@ -19,11 +19,8 @@ function hasUppercaseCase(str) {
     return (/[A-Z]/.test(str));
 }
 
-//var regex = new RegExp(/\srequire[^//]/g);
+var regex = /[^a-zA-Z0-9]require\(([^)]+)\)/g;   //look for require('xyz') anywhere where it's not hi5require() or lolrequire()
 
-var regex = /[^a-zA-Z0-9]require\(([^)]+)\)/g;   //look for oorequire('xyz') anywhere where it's not hi5require() or lolrequire()
-
-//var regex = /\srequire\(([^)]+)\)/g;
 
 var dependencyArray = null;
 var devDependencyArray = null;
@@ -83,7 +80,7 @@ var getAllFilesFromFolder = function (dir) {
 
             if (_.contains(ignorePaths, file)) {
                 if (opts.verbose) {
-                    console.log(colors.bold.grey('', '[nodejs-dep-check]'), colors.gray('"ignorePath" option has disregarded this path:'), dir + '/' + file, '');
+                    console.log(colors.bold.grey('', '[nodejs-dep-check]'), colors.gray('"ignorePath" option has disregarded this path:'), file, '');
                 }
             }
             else {
