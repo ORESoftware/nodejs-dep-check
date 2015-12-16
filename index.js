@@ -6,7 +6,6 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
-var appRoot = require('app-root-path');
 var colors = require('colors');
 var debug = require('debug')('ndc');
 
@@ -154,7 +153,7 @@ function run(options) {
         verbose: true
     });
 
-    var rootPath = appRoot.path;
+    var rootPath = process.cwd();
 
     ignoreDirs = opts.ignoreDirs || [];
     ignorePaths = opts.ignorePaths || [];

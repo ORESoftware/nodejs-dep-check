@@ -20,6 +20,19 @@ installing with NPM
 
 ## how to use
 
+### from the command line:
+
+```
+$ n-dc 
+
+or
+
+$ n-dc --conf path/to/ndc.conf.js --pkg.json path/to/package.json
+```
+
+### use from anywhere in Node.js:
+
+
 ```js
 var ndc = require('nodejs-dep-check');
 
@@ -52,7 +65,7 @@ note: you can ignore specific files by using either the ignoreDirs or ignorePath
              ignoreModules: ['colors/safe']
          });
          
-         done(result);   // Mocha will handle the test case for you, because nodejs-dep-check passes an instance of Error if any check fails
+         done(result);   // Mocha will handle the test case for you, because nodejs-dep-check.run() returns an instance of Error if any check fails
  
      });
  
@@ -60,11 +73,16 @@ note: you can ignore specific files by using either the ignoreDirs or ignorePath
  
 ```
 
-In the near future I will create make this runnable by command line, but for now, it's probably best used with a testing framework like Mocha, and I don't really see a good reason to make it a global package.
+It's probably best used with a testing framework like Mocha, but you can also use it from the command line.
 
-Currently it's configured to look at your entire project, so it always starts recursively with the root of your app.
+Caveats:
 
-here's typical output - you might notice that there is line commented out
+(1) Make sure the CWD is the root of your project (aka, you issue the node or mocha command where your package.json file is)
+(2) This module unfortunately cannot help you with dynamically resolved require calls (aka, require(path.resolve('foo' + '/bar')))
+
+This module is configured by default to look at your entire project, so it always starts recursively with the root of your app.
+
+here's typical output - you might notice that there is a line commented out
 
 ```
 //var redis = require('redis');
