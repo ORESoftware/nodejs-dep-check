@@ -19,7 +19,7 @@ function hasUppercaseCase(str) {
     return (/[A-Z]/.test(str));
 }
 
-var regex = /[^a-zA-Z0-9]require\(([^)]+)\)/g;   //look for require('xyz') anywhere where it's not hi5require() or lolrequire()
+var regex = /[^a-zA-Z0-9]require\(['|"]([^)]+)\)/g;   //look for require('xyz') anywhere where it's not hi5require() or lolrequire() or require(path.resolve...)
 
 
 var dependencyArray = null;
