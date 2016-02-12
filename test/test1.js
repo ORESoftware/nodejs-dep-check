@@ -1,12 +1,38 @@
-/**
- * Created by amills001c on 10/15/15.
- */
+/*
+ * created by Olegzandr Denman
+ *
+ * */
+
+//context
+//gwt
+
+//
+//var suman = require('../index.js');
+//var Test = suman.make(module, 'test/config/sumanConfig');
+//
+//
+//Test.createSuite('suite uno', function (suite) {
+
+var Test = require('suman').Test(module, 'suman.conf.js');
 
 
-var ndc = require('../index.js');
+Test.describe('suite uno', function () {
 
-ndc.run({
-    verbose:true,
-    //ignorePaths: ['/node_modules/'],
-    ignoreDirs: ['node_modules','test','requireThese.js','/ ']
+
+    it('[test]', function (done) {
+        var ndc = require('../');
+
+        var result = ndc.run({
+            verbose: true,
+            ignorePaths: ['/node_modules/', 'gulpfile.js'],
+            ignoreDirs: ['node_modules', 'test'],
+            ignoreModules: ['colors/safe']
+        });
+
+        done(result);
+    });
+
+
 });
+
+

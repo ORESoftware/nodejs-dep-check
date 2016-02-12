@@ -4,8 +4,8 @@
 
 
 module.exports = {
-    verbose: true,
+    verbose: false,
     ignorePaths: ['/node_modules/'],
-    ignoreDirs: ['node_modules', 'test'],
+    ignoreDirs: ['node_modules', 'test','gulpfile.js'],
     ignoreModules: ['colors/safe']
 };

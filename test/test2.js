@@ -9,11 +9,11 @@ describe('@test-dep-check', function () {
 
     it('[test]', function (done) {
 
-        var ndc = require('nodejs-dep-check');
+        var ndc = require('../');
 
         var result = ndc.run({
             verbose: true,
-            ignorePaths: ['/node_modules/'],
+            ignorePaths: ['/node_modules/','gulpfile.js'],
             ignoreDirs: ['node_modules', 'test'],
             ignoreModules: ['colors/safe']
         });
