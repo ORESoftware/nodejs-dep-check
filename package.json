@@ -1,6 +1,6 @@
 {
   "name": "nodejs-dep-check",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "checks to see if all the dependencies in your code are reflected in package.json",
   "preferGlobal": true,
   "dependencies": {

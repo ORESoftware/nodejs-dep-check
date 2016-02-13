@@ -4,7 +4,9 @@
  * */
 
 
-var suman = require('/Users/amills001c/WebstormProjects/ORESoftware/suman');
+//var suman = require('/Users/amills001c/WebstormProjects/ORESoftware/suman');
+
+import suman from 'suman';
 var Test = suman.init(module);
 
 
