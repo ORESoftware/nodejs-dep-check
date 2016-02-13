@@ -3,9 +3,9 @@
  */
 
 
-module.exports = {
+module.exports = Object.freeze({
     verbose: false,
     ignorePaths: ['/node_modules/'],
     ignoreDirs: ['node_modules', 'test','gulpfile.js'],
     ignoreModules: ['colors/safe']
-};
+});

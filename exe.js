@@ -1,47 +1,51 @@
 #! /usr/local/bin/node
 
-console.log('argv:',process.argv);
+///////////////////////////////////////////////////////
 
-var path = require('path');
-var ndc = require('./index');
+const path = require('path');
+const ndc = require('./index');
+const utils = require('./lib/utils');
 
-var dir = process.cwd();
+////////////////////////////////////////////////////////
 
-var config = null;
-var configPath = null;
+const cwd = process.cwd();
 
-var args = process.argv.slice(2);
+var config, configPath;
 
-console.log('args:',args);
+var args = JSON.parse(JSON.stringify(process.argv)).slice(2);
 
-if(args.indexOf('--conf') > -1){
-    configPath = args[args.indexOf('--conf') + 1];
-    if(!configPath || configPath.length < 1){
-        throw new Error('You passed the --conf option at the command line, but that option was not followed by a path');
+
+if (args.indexOf('--cfg') > -1) {
+    configPath = args[args.indexOf('--cfg') + 1];
+    if (!configPath || configPath.length < 1) {
+        throw new Error('You passed the --cfg option at the command line, but that option was not followed by a path');
     }
 }
-else{
-    console.log('No config path passed at command line, looking for a ndc.conf.js file in the working directory...');
+else {
+    console.log('\n','=> No config path passed at command line, looking for a ndc.conf.js file in the working directory or project root...');
 }
 
-if(configPath){
-    try{
-        config = require(path.resolve(dir + '/' + 'ndc.conf.js'));
+if (configPath) {
+    try {
+        var pth = path.resolve(cwd + '/' + configPath);
+        config = require(pth);
+
     }
-    catch(err){
+    catch (err) {
         console.error(err.message);
         throw new Error('No ndc.conf.js file could be found at the root of your project - are you in the right directory?')
     }
 }
-else{
-    try{
-        config = require(path.resolve(dir + '/' + 'ndc.conf.js'));
+else {
+    try {
+        var pth = path.resolve(utils.findRootPath(cwd) + '/' + 'ndc.conf.js');
+        config = require(pth);
+        console.log(' => ndc.conf.js file found: ' + pth,'\n');
     }
-    catch(err){
+    catch (err) {
         console.error(err.message);
         throw new Error('No ndc.conf.js file could be found at the root of your project - are you in the right directory?')
     }
-
 }
 
 

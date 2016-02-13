@@ -12,6 +12,13 @@ module.exports = Object.freeze({
     serverPort: 6969,
     expireResultsAfter: '10000000',
     resultsCapCount: 100,
-    resultsCapSize: 7000 // 3 gb's
+    resultsCapSize: 7000, // MBs
 
+    output: {
+        'standard': {},
+        'basic': {},
+        'web': {
+            servers: ['localhost']
+        }
+    },
 });

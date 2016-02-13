@@ -4,24 +4,22 @@
 
 //core
 var gulp = require('gulp');
-var path = require('path');
-var fs = require('fs');
-var tcpp = require('tcp-ping');
-var suman = require('suman');
+//var suman = require('suman');
+var suman = require('/Users/amills001c/WebstormProjects/ORESoftware/suman');
+
 
 //args & env
-var argv = process.env.argv;
+var argv = JSON.parse(JSON.stringify(process.argv));
+
 var $node_env = process.env.NODE_ENV;
 
 
-gulp.task('run_tests', ['suman'], function (cb) {
-
-    //testRunner('./test/build-tests','suman.conf.js');
+gulp.task('run_tests', [], function (cb) {
 
     suman.Runner({
-        $node_env: process.env.NODE_ENV,
-        fileOrDir: './test/test1.js',
-        configPath: './suman.conf.js'
+        $node_env: $node_env,
+        fileOrDir: 'test/test1.js',
+        configPath: 'suman.conf.js'
     }).on('message', function (msg) {
         console.log('msg from suman runner', msg);
         //process.exit();
@@ -30,29 +28,6 @@ gulp.task('run_tests', ['suman'], function (cb) {
 });
 
 
-gulp.task('suman', [], function (cb) {
-
-    //first ping server to make sure it's running, otherwise, continue
-    tcpp.probe('127.0.0.1', '6969', function (err, available) {
-        if (err) {
-            console.error(err);
-        }
-        else if (available) {
-            console.log('suman server already running');
-            cb(null);
-        }
-        else {
-            suman.Server({
-                configPath: './suman.conf.js'
-            }).on('message', function (msg) {
-                console.log('msg from suman server', msg);
-                cb();
-            });
-        }
-    });
-});
-
-
-process.on('exit', function () {
-    console.log('gulp is exiting...');
-});
+if(argv[2] && argv[2].indexOf('gulpfile') < 0){
+    gulp.start('run_tests');
+}

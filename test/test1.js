@@ -3,23 +3,16 @@
  *
  * */
 
-//context
-//gwt
 
-//
-//var suman = require('../index.js');
-//var Test = suman.make(module, 'test/config/sumanConfig');
-//
-//
-//Test.createSuite('suite uno', function (suite) {
-
-var Test = require('suman').Test(module, 'suman.conf.js');
+var suman = require('/Users/amills001c/WebstormProjects/ORESoftware/suman');
+var Test = suman.init(module);
 
 
 Test.describe('suite uno', function () {
 
 
-    it('[test]', function (done) {
+    this.it('[test]', function (done) {
+
         var ndc = require('../');
 
         var result = ndc.run({

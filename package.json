@@ -12,13 +12,13 @@
     "underscore": "^1.8.3"
   },
   "devDependencies": {
-    "suman": "^0.9.9"
+    "suman": "^1.1.1"
   },
   "bin": {
     "n-dc": "exe.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node gulpfile run_tests"
   },
   "url": "https://github.com/ORESoftware/nodejs-dep-check/issues",
   "repository": {

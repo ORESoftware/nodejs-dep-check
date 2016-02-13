@@ -6,8 +6,11 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
-var colors = require('colors');
+var colors = require('colors/safe');
 var debug = require('debug')('ndc');
+
+//#project
+var utils = require('./lib/utils');
 
 
 function endsWith(str, suffix) {
@@ -134,7 +137,7 @@ function analyzeFile(filePath) {
 
     if (fileErrors.length > 0) {
         if (opts.verbose) {
-            console.log('\n', colors.bold.gray('[nodejs-dep-check]'), colors.yellow('this file has potential problems:'), colors.black.bgYellow(filePath),'');
+            console.log('\n', colors.bold.gray('[nodejs-dep-check]'), colors.yellow('this file has potential problems:'), colors.black.bgYellow(filePath), '');
         }
         for (var i = 0; i < fileErrors.length; i++) {
             if (opts.verbose) {
@@ -149,11 +152,26 @@ function analyzeFile(filePath) {
 
 function run(options) {
 
+    var cwd = process.cwd();
+
+    if (!options) {
+
+        try {
+            options = require(path.resolve(utils.findRootPath(cwd) + '/ndc.conf.js'));
+        }
+        catch (err) {
+            throw new Error('No options were passed to .run(), so we looked for a ndc.conf.js file in the root of your project', '\n',
+                'but that was not there either');
+            return;
+        }
+
+    }
+
     opts = _.defaults((options || {}), {
         verbose: true
     });
 
-    var rootPath = process.cwd();
+    var rootPath = utils.findRootPath(process.cwd());
 
     ignoreDirs = opts.ignoreDirs || [];
     ignorePaths = opts.ignorePaths || [];
@@ -191,11 +209,11 @@ function run(options) {
 
     if (errors.length > 0) {
         var errs = _.uniq(errors).join('\n\t');
-        console.log('\n',colors.bold.gray('[nodejs-dep-check]'),colors.bgRed('found problems with your project:') + '\n\t' + colors.red(errs),'');
+        console.log('\n', colors.bold.gray('[nodejs-dep-check]'), colors.bgRed('found problems with your project:') + '\n\t' + colors.red(errs), '');
         return new Error(errs);
     }
     else {
-        console.log('\n',colors.bold.gray('[nodejs-dep-check]'),colors.black.bgGreen('found no problems with your project'),'');
+        console.log('\n', colors.bold.gray('[nodejs-dep-check]'), colors.black.bgGreen('found no problems with your project'), '\n\n\n');
         return null;
     }
 
