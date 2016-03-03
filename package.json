@@ -12,7 +12,15 @@
     "underscore": "^1.8.3"
   },
   "devDependencies": {
-    "suman": "^1.1.1"
+    "babel-preset-stage-2": "^6.5.0",
+    "babel-preset-stage-3": "^6.5.0",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-nodemon": "^2.0.6",
+    "gulp-rename": "^1.2.2",
+    "suman": "^1.1.1",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
   },
   "bin": {
     "n-dc": "exe.js"
