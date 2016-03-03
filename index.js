@@ -162,7 +162,6 @@ function run(options) {
         catch (err) {
             throw new Error('No options were passed to .run(), so we looked for a ndc.conf.js file in the root of your project', '\n',
                 'but that was not there either');
-            return;
         }
 
     }
