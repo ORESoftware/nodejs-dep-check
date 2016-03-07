@@ -6,12 +6,10 @@
 
 //var suman = require('/Users/amills001c/WebstormProjects/ORESoftware/suman');
 
-import suman from 'suman';
-var Test = suman.init(module);
+const Test = require('suman').init(module);
 
 
 Test.describe('suite uno', function () {
-
 
     this.it('[test]', function (done) {
 

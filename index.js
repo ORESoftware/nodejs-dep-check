@@ -1,17 +1,19 @@
-/**
- * Created by amills001c on 10/15/15.
- */
 
 
+//#core
 var fs = require('fs');
 var path = require('path');
+
+//#npm
 var _ = require('underscore');
 var colors = require('colors/safe');
 var debug = require('debug')('ndc');
 
 //#project
 var utils = require('./lib/utils');
+var coreModules = require('builtin-modules');
 
+/////////////////////////////////////////////////////////////////////////
 
 function endsWith(str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
@@ -28,33 +30,9 @@ var dependencyArray = null;
 var devDependencyArray = null;
 
 //var acceptableExtensions = ['.js', '.jsx', '.ts'];
-
 var acceptableExtensions = ['.js'];
 
-var coreModules = [
-    'fs',
-    'http',
-    'child_process',
-    'os',
-    'cluster',
-    'querystring',
-    'crypto',
-    'buffer',
-    'events',
-    'net',
-    'v8',
-    'stream',
-    'string_decoder',
-    'readline',
-    'path',
-    'util',
-    'assert',
-    'dns',
-    'https',
-    'vm',
-    'zlib',
-    'url'
-];
+
 
 var opts = null;
 var ignoreDirs = null;
@@ -152,25 +130,22 @@ function analyzeFile(filePath) {
 
 function run(options) {
 
-    var cwd = process.cwd();
+    var rootPath = utils.findRootPath(process.cwd());
 
     if (!options) {
 
         try {
-            options = require(path.resolve(utils.findRootPath(cwd) + '/ndc.conf.js'));
+            options = require(path.resolve(rootPath + '/ndc.conf.js'));
         }
         catch (err) {
             throw new Error('No options were passed to .run(), so we looked for a ndc.conf.js file in the root of your project', '\n',
                 'but that was not there either');
         }
-
     }
 
     opts = _.defaults((options || {}), {
         verbose: true
     });
-
-    var rootPath = utils.findRootPath(process.cwd());
 
     ignoreDirs = opts.ignoreDirs || [];
     ignorePaths = opts.ignorePaths || [];
