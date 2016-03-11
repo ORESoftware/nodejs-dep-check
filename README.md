@@ -7,7 +7,6 @@
 <a href="https://nodei.co/npm/nodejs-dep-check/"><img src="https://nodei.co/npm/nodejs-dep-check.png?downloads=true&downloadRank=true&stars=true"></a>
 
 <br>
-<br>
 
 
 ## installation
